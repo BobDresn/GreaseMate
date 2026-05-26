@@ -1,0 +1,22 @@
+﻿<UserControl x:Class="GreaseMate.Views.MainView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Grid>
+
+		<StackPanel Margin="20">
+
+			<TextBlock Text="VIN"/>
+
+			<TextBox Text="{Binding VinInput}" />
+
+			<Button Content="Decode VIN"
+                    Command="{Binding DecodeVinCommand}" />
+
+			<TextBlock Text="{Binding Make}" />
+
+		</StackPanel>
+
+	</Grid>
+
+</UserControl>

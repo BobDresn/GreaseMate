@@ -1,0 +1,174 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "E:\\source\\spr-labs-BobDresn\\Lab 7 - Functional Programming\\Lab\\GreaseMate\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{FEE4FE2A-9D70-4D23-8076-0B3946882FC5}|GreaseMate.csproj|e:\\source\\spr-labs-bobdresn\\lab 7 - functional programming\\lab\\greasemate\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FEE4FE2A-9D70-4D23-8076-0B3946882FC5}|GreaseMate.csproj|solutionrelative:mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\bobdr\\AppData\\Local\\Temp\\.vsdbgsrc\\37c1cf6345f70d447b61c76b063434deda2e2df90e1b09d716b32a9e0bdcd5b7\\App.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FEE4FE2A-9D70-4D23-8076-0B3946882FC5}|GreaseMate.csproj|e:\\source\\spr-labs-bobdresn\\lab 7 - functional programming\\lab\\greasemate\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{FEE4FE2A-9D70-4D23-8076-0B3946882FC5}|GreaseMate.csproj|solutionrelative:mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FEE4FE2A-9D70-4D23-8076-0B3946882FC5}|GreaseMate.csproj|e:\\source\\spr-labs-bobdresn\\lab 7 - functional programming\\lab\\greasemate\\views\\mainview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{FEE4FE2A-9D70-4D23-8076-0B3946882FC5}|GreaseMate.csproj|solutionrelative:views\\mainview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FEE4FE2A-9D70-4D23-8076-0B3946882FC5}|GreaseMate.csproj|e:\\source\\spr-labs-bobdresn\\lab 7 - functional programming\\lab\\greasemate\\views\\mainview.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FEE4FE2A-9D70-4D23-8076-0B3946882FC5}|GreaseMate.csproj|solutionrelative:views\\mainview.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FEE4FE2A-9D70-4D23-8076-0B3946882FC5}|GreaseMate.csproj|e:\\source\\spr-labs-bobdresn\\lab 7 - functional programming\\lab\\greasemate\\viewmodels\\mainviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FEE4FE2A-9D70-4D23-8076-0B3946882FC5}|GreaseMate.csproj|solutionrelative:viewmodels\\mainviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FEE4FE2A-9D70-4D23-8076-0B3946882FC5}|GreaseMate.csproj|e:\\source\\spr-labs-bobdresn\\lab 7 - functional programming\\lab\\greasemate\\views\\mainview.xaml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{FEE4FE2A-9D70-4D23-8076-0B3946882FC5}|GreaseMate.csproj|solutionrelative:views\\mainview.xaml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\bobdr\\AppData\\Local\\Temp\\.vsdbgsrc\\b49ace08f4cd26a4f275d628999a0f91ccb8a1892704530d9e6f5bd1284082f1\\ResourcePart.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FEE4FE2A-9D70-4D23-8076-0B3946882FC5}|GreaseMate.csproj|e:\\source\\spr-labs-bobdresn\\lab 7 - functional programming\\lab\\greasemate\\models\\vehicle.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FEE4FE2A-9D70-4D23-8076-0B3946882FC5}|GreaseMate.csproj|solutionrelative:models\\vehicle.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MainWindow.xaml.cs",
+              "DocumentMoniker": "E:\\source\\spr-labs-BobDresn\\Lab 7 - Functional Programming\\Lab\\GreaseMate\\MainWindow.xaml.cs",
+              "RelativeDocumentMoniker": "MainWindow.xaml.cs",
+              "ToolTip": "E:\\source\\spr-labs-BobDresn\\Lab 7 - Functional Programming\\Lab\\GreaseMate\\MainWindow.xaml.cs",
+              "RelativeToolTip": "MainWindow.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-26T23:19:48.462Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "MainView.xaml.cs",
+              "DocumentMoniker": "E:\\source\\spr-labs-BobDresn\\Lab 7 - Functional Programming\\Lab\\GreaseMate\\Views\\MainView.xaml.cs",
+              "RelativeDocumentMoniker": "Views\\MainView.xaml.cs",
+              "ToolTip": "E:\\source\\spr-labs-BobDresn\\Lab 7 - Functional Programming\\Lab\\GreaseMate\\Views\\MainView.xaml.cs",
+              "RelativeToolTip": "Views\\MainView.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-26T23:16:59.995Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "MainView.xaml",
+              "DocumentMoniker": "E:\\source\\spr-labs-BobDresn\\Lab 7 - Functional Programming\\Lab\\GreaseMate\\Views\\MainView.xaml",
+              "RelativeDocumentMoniker": "Views\\MainView.xaml",
+              "ToolTip": "E:\\source\\spr-labs-BobDresn\\Lab 7 - Functional Programming\\Lab\\GreaseMate\\Views\\MainView.xaml",
+              "RelativeToolTip": "Views\\MainView.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-05-26T23:16:18.423Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "MainWindow.xaml",
+              "DocumentMoniker": "E:\\source\\spr-labs-BobDresn\\Lab 7 - Functional Programming\\Lab\\GreaseMate\\MainWindow.xaml",
+              "RelativeDocumentMoniker": "MainWindow.xaml",
+              "ToolTip": "E:\\source\\spr-labs-BobDresn\\Lab 7 - Functional Programming\\Lab\\GreaseMate\\MainWindow.xaml",
+              "RelativeToolTip": "MainWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-05-26T23:11:22.906Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "App.cs",
+              "DocumentMoniker": "C:\\Users\\bobdr\\AppData\\Local\\Temp\\.vsdbgsrc\\37c1cf6345f70d447b61c76b063434deda2e2df90e1b09d716b32a9e0bdcd5b7\\App.cs",
+              "ToolTip": "C:\\Users\\bobdr\\AppData\\Local\\Temp\\.vsdbgsrc\\37c1cf6345f70d447b61c76b063434deda2e2df90e1b09d716b32a9e0bdcd5b7\\App.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAMAAAAAQAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-26T23:10:26.272Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "ResourcePart.cs",
+              "DocumentMoniker": "C:\\Users\\bobdr\\AppData\\Local\\Temp\\.vsdbgsrc\\b49ace08f4cd26a4f275d628999a0f91ccb8a1892704530d9e6f5bd1284082f1\\ResourcePart.cs",
+              "ToolTip": "C:\\Users\\bobdr\\AppData\\Local\\Temp\\.vsdbgsrc\\b49ace08f4cd26a4f275d628999a0f91ccb8a1892704530d9e6f5bd1284082f1\\ResourcePart.cs [Read Only]",
+              "ViewState": "AgIAABYAAAAAAAAAAAAIwCcAAAAEAAAAAQAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-26T23:10:12.787Z",
+              "EditorCaption": " [Read Only]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "MainView.xaml",
+              "DocumentMoniker": "E:\\source\\spr-labs-BobDresn\\Lab 7 - Functional Programming\\Lab\\GreaseMate\\Views\\MainView.xaml",
+              "RelativeDocumentMoniker": "Views\\MainView.xaml",
+              "ToolTip": "E:\\source\\spr-labs-BobDresn\\Lab 7 - Functional Programming\\Lab\\GreaseMate\\Views\\MainView.xaml",
+              "RelativeToolTip": "Views\\MainView.xaml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-05-26T23:08:38.603Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "MainViewModel.cs",
+              "DocumentMoniker": "E:\\source\\spr-labs-BobDresn\\Lab 7 - Functional Programming\\Lab\\GreaseMate\\ViewModels\\MainViewModel.cs",
+              "RelativeDocumentMoniker": "ViewModels\\MainViewModel.cs",
+              "ToolTip": "E:\\source\\spr-labs-BobDresn\\Lab 7 - Functional Programming\\Lab\\GreaseMate\\ViewModels\\MainViewModel.cs",
+              "RelativeToolTip": "ViewModels\\MainViewModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-26T23:08:37.523Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Vehicle.cs",
+              "DocumentMoniker": "E:\\source\\spr-labs-BobDresn\\Lab 7 - Functional Programming\\Lab\\GreaseMate\\Models\\Vehicle.cs",
+              "RelativeDocumentMoniker": "Models\\Vehicle.cs",
+              "ToolTip": "E:\\source\\spr-labs-BobDresn\\Lab 7 - Functional Programming\\Lab\\GreaseMate\\Models\\Vehicle.cs",
+              "RelativeToolTip": "Models\\Vehicle.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-26T23:06:59.196Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
