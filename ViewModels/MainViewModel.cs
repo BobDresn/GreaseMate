@@ -1,28 +1,38 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+﻿using GreaseMate.Models;
+using System.Collections.ObjectModel;
 
-namespace GreaseMate.ViewModels;
-
-public partial class MainViewModel : ObservableObject
+public class MainViewModel
 {
-    [ObservableProperty]
-    private string vinInput = "";
+    public ObservableCollection<Vehicle> Vehicles { get; set; } = new();
 
-    [ObservableProperty]
-    private string make = "";
+    public string Vin { get; set; }
+    public string Make { get; set; }
+    public string Model { get; set; }
 
-    [ObservableProperty]
-    private string model = "";
-
-    [ObservableProperty]
-    private int year;
-
-    [RelayCommand]
-    private void DecodeVin()
+    public void LoadVehicles()
     {
-        // Temporary fake data
-        Make = "Ford";
-        Model = "Mustang";
-        Year = 2020;
+        using var db = new GreaseMateDbContext();
+
+        Vehicles.Clear();
+
+        foreach (var v in db.Vehicles.ToList())
+            Vehicles.Add(v);
+    }
+
+    public void AddVehicle()
+    {
+        using var db = new GreaseMateDbContext();
+
+        var vehicle = new Vehicle
+        {
+            Vin = Vin,
+            Make = Make,
+            Model = Model
+        };
+
+        db.Vehicles.Add(vehicle);
+        db.SaveChanges();
+
+        LoadVehicles();
     }
 }

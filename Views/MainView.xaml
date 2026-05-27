@@ -2,21 +2,25 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-	<Grid>
+    <Grid>
+        <StackPanel Margin="10">
 
-		<StackPanel Margin="20">
+            <TextBox Text="{Binding Vin}" />
+            <TextBox Text="{Binding Make}" />
+            <TextBox Text="{Binding Model}" />
 
-			<TextBlock Text="VIN"/>
+            <Button Content="Add Vehicle"
+            Click="AddVehicle_Click"/>
 
-			<TextBox Text="{Binding VinInput}" />
+            <ListBox ItemsSource="{Binding Vehicles}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Make}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
 
-			<Button Content="Decode VIN"
-                    Command="{Binding DecodeVinCommand}" />
-
-			<TextBlock Text="{Binding Make}" />
-
-		</StackPanel>
-
-	</Grid>
+        </StackPanel>
+    </Grid>
 
 </UserControl>
