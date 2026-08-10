@@ -1,0 +1,222 @@
+<UserControl x:Class="GreaseMate.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="260"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Grid Grid.Row="0"
+              Margin="30,25,30,15">
+
+            <StackPanel>
+
+                <TextBlock Text="Dashboard"
+                           FontSize="30"
+                           FontWeight="Bold"/>
+
+                <TextBlock Text="Keep your vehicles running their best."
+                           Foreground="#666"
+                           FontSize="14"/>
+
+            </StackPanel>
+
+        </Grid>
+
+        <!-- Hero -->
+		<Border Grid.Row="1"
+        Margin="30,0,30,20"
+        CornerRadius="15"
+        ClipToBounds="True">
+
+			<Grid>
+
+				<Image Source="/GreaseMate;component/Resources/Images/garage.jpg"
+					   Stretch="UniformToFill"/>
+
+				<!-- Dark overlay -->
+				<Rectangle Fill="#66000000"/>
+
+				<StackPanel Margin="30"
+							VerticalAlignment="Center">
+
+					<TextBlock Text="Your Garage"
+							   Foreground="White"
+							   FontSize="30"
+							   FontWeight="Bold"/>
+
+					<TextBlock Text="Keep track of everything your vehicles need."
+							   Foreground="White"
+							   FontSize="16"
+							   Margin="0,5,0,0"/>
+
+				</StackPanel>
+
+			</Grid>
+
+		</Border>
+
+        <!-- Dashboard cards -->
+        <Grid Grid.Row="2"
+              Margin="30,0,30,30">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Vehicle count -->
+            <Button Grid.Column="0"
+        Command="{Binding ShowVehiclesCommand}"
+        Margin="0,0,10,0"
+        Background="Transparent"
+        BorderThickness="0"
+        Cursor="Hand">
+
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+
+                        <Border Background="White"
+                    CornerRadius="12"
+                    Padding="20">
+
+                            <ContentPresenter/>
+
+                        </Border>
+
+                    </ControlTemplate>
+                </Button.Template>
+
+                <StackPanel>
+
+                    <TextBlock Text="VEHICLES"
+                   FontSize="13"
+                   FontWeight="SemiBold"
+                   Foreground="#777777"/>
+
+                    <TextBlock Text="{Binding VehicleCount}"
+                   FontSize="36"
+                   FontWeight="Bold"
+                   Foreground="#171A1F"
+                   Margin="0,5,0,0"/>
+
+                    <TextBlock Text="Currently tracked"
+                   FontSize="13"
+                   Foreground="#999999"/>
+
+                    <TextBlock Text="View vehicles →"
+                   FontSize="12"
+                   Foreground="#555555"
+                   Margin="0,12,0,0"/>
+
+                </StackPanel>
+
+            </Button>
+
+            <!-- Maintenance -->
+            <Button Grid.Column="1"
+        Command="{Binding ShowMaintenanceCommand}"
+        Margin="5,0"
+        Background="Transparent"
+        BorderThickness="0"
+        Cursor="Hand">
+
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+
+                        <Border Background="White"
+                    CornerRadius="12"
+                    Padding="20">
+
+                            <ContentPresenter/>
+
+                        </Border>
+
+                    </ControlTemplate>
+                </Button.Template>
+
+                <StackPanel>
+
+                    <TextBlock Text="MAINTENANCE"
+                   FontSize="13"
+                   FontWeight="SemiBold"
+                   Foreground="#777777"/>
+
+                    <TextBlock Text="{Binding MaintenanceCount}"
+                   FontSize="36"
+                   FontWeight="Bold"
+                   Foreground="#171A1F"
+                   Margin="0,5,0,0"/>
+
+                    <TextBlock Text="Records this year"
+                   FontSize="13"
+                   Foreground="#999999"/>
+
+                    <TextBlock Text="View maintenance →"
+                   FontSize="12"
+                   Foreground="#555555"
+                   Margin="0,12,0,0"/>
+
+                </StackPanel>
+
+            </Button>
+
+            <!-- Upcoming -->
+            <Button Grid.Column="2"
+        Command="{Binding ShowRemindersCommand}"
+        Margin="10,0,0,0"
+        Background="Transparent"
+        BorderThickness="0"
+        Cursor="Hand">
+
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+
+                        <Border Background="White"
+                    CornerRadius="12"
+                    Padding="20">
+
+                            <ContentPresenter/>
+
+                        </Border>
+
+                    </ControlTemplate>
+                </Button.Template>
+
+                <StackPanel>
+
+                    <TextBlock Text="UPCOMING MAINTENANCE"
+                   FontSize="13"
+                   FontWeight="SemiBold"
+                   Foreground="#777777"/>
+
+                    <TextBlock Text="{Binding UpcomingMaintenanceCount}"
+                   FontSize="36"
+                   FontWeight="Bold"
+                   Foreground="#171A1F"
+                   Margin="0,5,0,0"/>
+
+                    <TextBlock Text="Service reminders"
+                   FontSize="13"
+                   Foreground="#999999"/>
+
+                    <TextBlock Text="View reminders →"
+                   FontSize="12"
+                   Foreground="#555555"
+                   Margin="0,12,0,0"/>
+
+                </StackPanel>
+
+            </Button>
+
+        </Grid>
+
+    </Grid>
+
+</UserControl>

@@ -11,7 +11,7 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
-        using var db = new GreaseMateDbContext();
+        using var db = new Data.GreaseMateDbContext();
         db.Database.EnsureCreated();
     }
 

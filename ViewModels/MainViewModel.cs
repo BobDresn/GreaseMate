@@ -1,25 +1,97 @@
-﻿using GreaseMate.Models;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using GreaseMate.Data;
+using GreaseMate.Models;
 using System.Collections.ObjectModel;
+using System.Windows.Controls;
+using GreaseMate.Views;
 
-public class MainViewModel
+namespace GreaseMate.ViewModels;
+
+public partial class MainViewModel : ObservableObject
 {
-    public ObservableCollection<Vehicle> Vehicles { get; set; } = new();
+    [ObservableProperty]
+    private string vin = "";
 
-    public string Vin { get; set; }
-    public string Make { get; set; }
-    public string Model { get; set; }
+    [ObservableProperty]
+    private string make = "";
 
-    public void LoadVehicles()
+    [ObservableProperty]
+    private string model = "";
+
+    [ObservableProperty]
+    private int year;
+
+    [ObservableProperty]
+    private int mileage;
+
+    [ObservableProperty]
+    private UserControl currentView;
+
+    public ObservableCollection<Vehicle> Vehicles { get; } = new();
+
+    public int VehicleCount => Vehicles.Count;
+
+    [ObservableProperty]
+    private int maintenanceCount = 0;
+
+    [ObservableProperty]
+    private int upcomingMaintenanceCount = 0;
+
+    public MainViewModel()
+    {
+        CurrentView = new DashboardView();
+
+        LoadVehicles();
+    }
+
+    [RelayCommand]
+    private void ShowDashboard()
+    {
+        CurrentView = new DashboardView();
+    }
+
+    [RelayCommand]
+    private void ShowVehicles()
+    {
+        CurrentView = new VehiclesView();
+    }
+
+    [RelayCommand]
+    private void ShowMaintenance()
+    {
+        CurrentView = new MaintenanceView();
+    }
+
+    [RelayCommand]
+    private void ShowReminders()
+    {
+        CurrentView = new RemindersView();
+    }
+
+    [RelayCommand]
+    private void ShowReports()
+    {
+        CurrentView = new ReportsView();
+    }
+
+    [RelayCommand]
+    private void LoadVehicles()
     {
         using var db = new GreaseMateDbContext();
 
         Vehicles.Clear();
 
-        foreach (var v in db.Vehicles.ToList())
-            Vehicles.Add(v);
+        foreach (var vehicle in db.Vehicles.ToList())
+        {
+            Vehicles.Add(vehicle);
+        }
+
+        OnPropertyChanged(nameof(VehicleCount));
     }
 
-    public void AddVehicle()
+    [RelayCommand]
+    private void AddVehicle()
     {
         using var db = new GreaseMateDbContext();
 
@@ -27,12 +99,20 @@ public class MainViewModel
         {
             Vin = Vin,
             Make = Make,
-            Model = Model
+            Model = Model,
+            Year = Year,
+            Mileage = Mileage
         };
 
         db.Vehicles.Add(vehicle);
         db.SaveChanges();
 
         LoadVehicles();
+
+        Vin = "";
+        Make = "";
+        Model = "";
+        Year = 0;
+        Mileage = 0;
     }
 }
