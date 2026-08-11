@@ -3,8 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Grid Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-        <StackPanel>
+        <StackPanel Grid.Row="0">
 
             <TextBlock Text="Vehicles"
                        FontSize="30"
@@ -14,26 +18,103 @@
                        FontSize="14"
                        Foreground="#777"
                        Margin="0,5,0,25"/>
+        </StackPanel>
 
-            <Border Background="White"
-                    CornerRadius="12"
-                    Padding="25">
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="330"/>
+                <ColumnDefinition Width="20"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-                <StackPanel>
+            <!-- Add vehicle form -->
+            <Border Grid.Column="0" Background="White" CornerRadius="12" Padding="25">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <TextBlock Text="Add a Vehicle" FontSize="20" FontWeight="SemiBold"/>
+                        <TextBlock Text="VIN is optional so older vehicles can be entered manually."
+                                   Foreground="#777" TextWrapping="Wrap" Margin="0,5,0,20"/>
 
-                    <TextBlock Text="Your Vehicles"
-                               FontSize="20"
-                               FontWeight="SemiBold"/>
+                        <TextBlock Text="VIN (optional)" FontWeight="SemiBold"/>
+                        <TextBox Text="{Binding Vin, UpdateSourceTrigger=PropertyChanged}"
+                                 MaxLength="17" Height="36" Padding="8" Margin="0,5,0,14"/>
 
-                    <TextBlock Text="Vehicle management will appear here."
-                               Foreground="#777"
-                               Margin="0,10,0,0"/>
+                        <TextBlock Text="Make" FontWeight="SemiBold"/>
+                        <TextBox Text="{Binding Make, UpdateSourceTrigger=PropertyChanged}"
+                                 Height="36" Padding="8" Margin="0,5,0,14"/>
 
-                </StackPanel>
+                        <TextBlock Text="Model" FontWeight="SemiBold"/>
+                        <TextBox Text="{Binding Model, UpdateSourceTrigger=PropertyChanged}"
+                                 Height="36" Padding="8" Margin="0,5,0,14"/>
 
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="12"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Year" FontWeight="SemiBold"/>
+                                <TextBox Text="{Binding Year, UpdateSourceTrigger=PropertyChanged}"
+                                         Height="36" Padding="8" Margin="0,5,0,0"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Mileage" FontWeight="SemiBold"/>
+                                <TextBox Text="{Binding Mileage, UpdateSourceTrigger=PropertyChanged}"
+                                         Height="36" Padding="8" Margin="0,5,0,0"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock Text="{Binding VehicleFormError}" Foreground="#C62828"
+                                   TextWrapping="Wrap" MinHeight="20" Margin="0,12,0,4"/>
+
+                        <Button Content="Add Vehicle" Command="{Binding AddVehicleCommand}"
+                                Height="42" Background="#171A1F" Foreground="White"
+                                FontWeight="SemiBold" Cursor="Hand"/>
+                    </StackPanel>
+                </ScrollViewer>
             </Border>
 
-        </StackPanel>
+            <!-- Saved vehicles -->
+            <Border Grid.Column="2" Background="White" CornerRadius="12" Padding="25">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0" Margin="0,0,0,15">
+                        <TextBlock Text="Your Vehicles" FontSize="20" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding VehicleCount, StringFormat={}{0} tracked}"
+                                   Foreground="#777" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                    </Grid>
+
+                    <DataGrid Grid.Row="1" ItemsSource="{Binding Vehicles}"
+                              SelectedItem="{Binding SelectedVehicle}"
+                              AutoGenerateColumns="False" IsReadOnly="True"
+                              SelectionMode="Single" SelectionUnit="FullRow"
+                              CanUserAddRows="False" HeadersVisibility="Column"
+                              GridLinesVisibility="Horizontal" BorderThickness="0">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Year" Binding="{Binding Year}" Width="70"/>
+                            <DataGridTextColumn Header="Vehicle" Binding="{Binding Make}" Width="*"/>
+                            <DataGridTextColumn Header="Model" Binding="{Binding Model}" Width="*"/>
+                            <DataGridTextColumn Header="Mileage" Binding="{Binding Mileage, StringFormat=N0}" Width="100"/>
+                            <DataGridTextColumn Header="VIN" Binding="{Binding Vin}" Width="150"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <Grid Grid.Row="2" Margin="0,15,0,0">
+                        <TextBlock Text="Select a row to remove a vehicle."
+                                   Foreground="#777" VerticalAlignment="Center"/>
+                        <Button Content="Remove Selected" Command="{Binding RemoveVehicleCommand}"
+                                HorizontalAlignment="Right" Height="38" Padding="18,0"
+                                Foreground="#B71C1C" Cursor="Hand"/>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
 
     </Grid>
 
