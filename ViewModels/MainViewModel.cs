@@ -41,10 +41,30 @@ public partial class MainViewModel : ObservableObject
     [NotifyCanExecuteChangedFor(nameof(EditMaintenanceCommand))]
     private MaintenanceRecord? selectedMaintenanceRecord;
 
+    [ObservableProperty] private Vehicle? reminderVehicle;
+    [ObservableProperty] private string reminderServiceType = "";
+    [ObservableProperty] private DateTime? reminderDueDate;
+    [ObservableProperty] private int? reminderDueMileage;
+    [ObservableProperty] private int? reminderRepeatMonths;
+    [ObservableProperty] private int? reminderRepeatMileage;
+    [ObservableProperty] private string reminderNotes = "";
+    [ObservableProperty] private string reminderFormError = "";
+    [ObservableProperty] private bool isEditingReminder;
+    [ObservableProperty] private int defaultReminderDays = 30;
+    [ObservableProperty] private int defaultReminderMiles = 1000;
+    [ObservableProperty] private string reminderSettingsMessage = "";
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(EditReminderCommand))]
+    [NotifyCanExecuteChangedFor(nameof(RemoveReminderCommand))]
+    [NotifyCanExecuteChangedFor(nameof(CompleteReminderCommand))]
+    private MaintenanceReminder? selectedReminder;
+
     [ObservableProperty] private UserControl currentView;
 
     public ObservableCollection<Vehicle> Vehicles { get; } = new();
     public ObservableCollection<MaintenanceRecord> MaintenanceRecords { get; } = new();
+    public ObservableCollection<MaintenanceReminder> MaintenanceReminders { get; } = new();
     public int VehicleCount => Vehicles.Count;
 
     [ObservableProperty] private int maintenanceCount;
@@ -56,12 +76,26 @@ public partial class MainViewModel : ObservableObject
         CurrentView = new DashboardView();
         LoadVehicles();
         LoadMaintenance();
+        LoadReminders();
+        LoadReminderSettings();
     }
 
     [RelayCommand] private void ShowDashboard() => CurrentView = new DashboardView();
     [RelayCommand] private void ShowVehicles() => CurrentView = new VehiclesView();
-    [RelayCommand] private void ShowMaintenance() => CurrentView = new MaintenanceView();
-    [RelayCommand] private void ShowReminders() => CurrentView = new RemindersView();
+    [RelayCommand]
+    private void ShowMaintenance()
+    {
+        LoadMaintenance();
+        LoadReminders();
+        CurrentView = new MaintenanceView();
+    }
+
+    [RelayCommand]
+    private void ShowReminders()
+    {
+        LoadReminders();
+        CurrentView = new RemindersView();
+    }
     [RelayCommand] private void ShowReports() => CurrentView = new ReportsView();
 
     [RelayCommand]
@@ -116,6 +150,18 @@ public partial class MainViewModel : ObservableObject
         using var db = new GreaseMateDbContext();
         var vehicle = db.Vehicles.Find(SelectedVehicle.Id);
         if (vehicle is null) return;
+
+        if (vehicle.Mileage != Mileage)
+        {
+            var directionWarning = Mileage < vehicle.Mileage
+                ? "\n\nThe new mileage is lower than the currently saved mileage."
+                : "";
+            var result = MessageBox.Show(
+                $"Update {vehicle.DisplayName} from {vehicle.Mileage:N0} miles to {Mileage:N0} miles?{directionWarning}",
+                "Confirm mileage update", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result != MessageBoxResult.Yes) return;
+        }
+
         vehicle.Vin = Vin.Trim().ToUpperInvariant();
         vehicle.Make = Make.Trim();
         vehicle.Model = Model.Trim();
@@ -124,6 +170,7 @@ public partial class MainViewModel : ObservableObject
         db.SaveChanges();
         FinishVehicleSave();
         LoadMaintenance();
+        LoadReminders();
     }
 
     [RelayCommand]
@@ -212,12 +259,7 @@ public partial class MainViewModel : ObservableObject
             MaintenanceRecords.Add(record);
 
         MaintenanceCount = MaintenanceRecords.Count(r => r.ServiceDate.Year == DateTime.Today.Year);
-        UpcomingMaintenanceCount = MaintenanceRecords.Count(r =>
-            (r.NextServiceDate.HasValue && r.NextServiceDate.Value.Date >= DateTime.Today &&
-             r.NextServiceDate.Value.Date <= DateTime.Today.AddDays(30)) ||
-            (r.NextServiceMileage.HasValue && r.Vehicle is not null &&
-             r.NextServiceMileage.Value >= r.Vehicle.Mileage &&
-             r.NextServiceMileage.Value <= r.Vehicle.Mileage + 1000));
+        UpcomingMaintenanceCount = MaintenanceReminders.Count;
     }
 
     [RelayCommand]
@@ -226,9 +268,53 @@ public partial class MainViewModel : ObservableObject
         MaintenanceFormError = ValidateMaintenance();
         if (!string.IsNullOrEmpty(MaintenanceFormError)) return;
         using var db = new GreaseMateDbContext();
-        db.MaintenanceRecords.Add(BuildMaintenanceRecord());
+
+        // A future service date represents scheduled work, not completed history.
+        if (ServiceDate!.Value.Date > DateTime.Today)
+        {
+            var currentVehicle = db.Vehicles.Find(MaintenanceVehicle!.Id);
+            int? scheduledMileage = NextServiceMileage;
+            if (!scheduledMileage.HasValue &&
+                currentVehicle is not null &&
+                ServiceMileage > currentVehicle.Mileage)
+            {
+                scheduledMileage = ServiceMileage;
+            }
+
+            db.MaintenanceReminders.Add(new MaintenanceReminder
+            {
+                VehicleId = MaintenanceVehicle.Id,
+                ServiceType = ServiceType.Trim(),
+                DueDate = ServiceDate.Value.Date,
+                DueMileage = scheduledMileage,
+                Notes = ServiceNotes.Trim()
+            });
+            db.SaveChanges();
+            FinishMaintenanceSave();
+            LoadReminders();
+            return;
+        }
+
+        var record = BuildMaintenanceRecord();
+        db.MaintenanceRecords.Add(record);
+
+        if (NextServiceDate.HasValue || NextServiceMileage.HasValue)
+        {
+            db.MaintenanceReminders.Add(new MaintenanceReminder
+            {
+                VehicleId = MaintenanceVehicle!.Id,
+                ServiceType = ServiceType.Trim(),
+                DueDate = NextServiceDate?.Date,
+                DueMileage = NextServiceMileage,
+                Notes = "Created from completed maintenance."
+            });
+        }
+
+        OfferVehicleMileageUpdate(db, MaintenanceVehicle!.Id, ServiceMileage);
         db.SaveChanges();
         FinishMaintenanceSave();
+        LoadVehicles();
+        LoadReminders();
     }
 
     private bool CanEditMaintenance() => SelectedMaintenanceRecord is not null;
@@ -264,8 +350,11 @@ public partial class MainViewModel : ObservableObject
         var record = db.MaintenanceRecords.Find(SelectedMaintenanceRecord.Id);
         if (record is null) return;
         CopyMaintenanceFields(record);
+        OfferVehicleMileageUpdate(db, MaintenanceVehicle!.Id, ServiceMileage);
         db.SaveChanges();
         FinishMaintenanceSave();
+        LoadVehicles();
+        LoadReminders();
     }
 
     private MaintenanceRecord BuildMaintenanceRecord()
@@ -292,7 +381,8 @@ public partial class MainViewModel : ObservableObject
         if (MaintenanceVehicle is null) return "Select a vehicle.";
         if (string.IsNullOrWhiteSpace(ServiceType)) return "Service type is required.";
         if (!ServiceDate.HasValue) return "Service date is required.";
-        if (ServiceDate.Value.Date > DateTime.Today) return "Service date cannot be in the future.";
+        if (IsEditingMaintenance && ServiceDate.Value.Date > DateTime.Today)
+            return "A completed record cannot be moved into the future. Create a new upcoming item instead.";
         if (ServiceMileage < 0) return "Mileage cannot be negative.";
         if (ServiceCost < 0) return "Cost cannot be negative.";
         if (NextServiceMileage.HasValue && NextServiceMileage.Value < ServiceMileage)
@@ -300,6 +390,22 @@ public partial class MainViewModel : ObservableObject
         if (NextServiceDate.HasValue && NextServiceDate.Value.Date < ServiceDate.Value.Date)
             return "Next-service date cannot be before the service date.";
         return "";
+    }
+
+    private static void OfferVehicleMileageUpdate(
+        GreaseMateDbContext db,
+        int vehicleId,
+        int maintenanceMileage)
+    {
+        var vehicle = db.Vehicles.Find(vehicleId);
+        if (vehicle is null || maintenanceMileage <= vehicle.Mileage) return;
+
+        var result = MessageBox.Show(
+            $"This service was recorded at {maintenanceMileage:N0} miles, but {vehicle.DisplayName} is saved at " +
+            $"{vehicle.Mileage:N0} miles.\n\nUpdate the vehicle mileage to {maintenanceMileage:N0}?",
+            "Update vehicle mileage", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+        if (result == MessageBoxResult.Yes) vehicle.Mileage = maintenanceMileage;
     }
 
     private bool CanRemoveMaintenance() => SelectedMaintenanceRecord is not null;
@@ -347,5 +453,226 @@ public partial class MainViewModel : ObservableObject
         NextServiceMileage = null;
         MaintenanceFormError = "";
         IsEditingMaintenance = false;
+    }
+
+    [RelayCommand]
+    private void LoadReminders()
+    {
+        using var db = new GreaseMateDbContext();
+        db.EnsureSchema();
+        MaintenanceReminders.Clear();
+        foreach (var reminder in db.MaintenanceReminders.Include(r => r.Vehicle)
+                     .OrderBy(r => r.DueDate == null)
+                     .ThenBy(r => r.DueDate)
+                     .ThenBy(r => r.DueMileage))
+            MaintenanceReminders.Add(reminder);
+
+        UpcomingMaintenanceCount = MaintenanceReminders.Count;
+    }
+
+    [RelayCommand]
+    private void AddReminder()
+    {
+        ReminderFormError = ValidateReminder();
+        if (!string.IsNullOrEmpty(ReminderFormError)) return;
+
+        using var db = new GreaseMateDbContext();
+        db.MaintenanceReminders.Add(BuildReminder());
+        db.SaveChanges();
+        FinishReminderSave();
+    }
+
+    private bool CanEditReminder() => SelectedReminder is not null;
+
+    [RelayCommand(CanExecute = nameof(CanEditReminder))]
+    private void EditReminder()
+    {
+        if (SelectedReminder is null) return;
+        ReminderVehicle = Vehicles.FirstOrDefault(v => v.Id == SelectedReminder.VehicleId);
+        ReminderServiceType = SelectedReminder.ServiceType;
+        ReminderDueDate = SelectedReminder.DueDate;
+        ReminderDueMileage = SelectedReminder.DueMileage;
+        ReminderRepeatMonths = SelectedReminder.RepeatMonths;
+        ReminderRepeatMileage = SelectedReminder.RepeatMileage;
+        ReminderNotes = SelectedReminder.Notes;
+        ReminderFormError = "";
+        IsEditingReminder = true;
+    }
+
+    [RelayCommand]
+    private void UpdateReminder()
+    {
+        if (SelectedReminder is null)
+        {
+            ReminderFormError = "Select a reminder before saving changes.";
+            return;
+        }
+
+        ReminderFormError = ValidateReminder();
+        if (!string.IsNullOrEmpty(ReminderFormError)) return;
+
+        using var db = new GreaseMateDbContext();
+        var reminder = db.MaintenanceReminders.Find(SelectedReminder.Id);
+        if (reminder is null) return;
+        CopyReminderFields(reminder);
+        db.SaveChanges();
+        FinishReminderSave();
+    }
+
+    private MaintenanceReminder BuildReminder()
+    {
+        var reminder = new MaintenanceReminder();
+        CopyReminderFields(reminder);
+        return reminder;
+    }
+
+    private void CopyReminderFields(MaintenanceReminder reminder)
+    {
+        reminder.VehicleId = ReminderVehicle!.Id;
+        reminder.ServiceType = ReminderServiceType.Trim();
+        reminder.DueDate = ReminderDueDate?.Date;
+        reminder.DueMileage = ReminderDueMileage;
+        reminder.RepeatMonths = ReminderRepeatMonths;
+        reminder.RepeatMileage = ReminderRepeatMileage;
+        reminder.Notes = ReminderNotes.Trim();
+    }
+
+    private string ValidateReminder()
+    {
+        if (ReminderVehicle is null) return "Select a vehicle.";
+        if (string.IsNullOrWhiteSpace(ReminderServiceType)) return "Service type is required.";
+        if (!ReminderDueDate.HasValue && !ReminderDueMileage.HasValue)
+            return "Enter a due date, due mileage, or both.";
+        if (ReminderDueMileage.HasValue && ReminderDueMileage.Value < 0)
+            return "Due mileage cannot be negative.";
+        if (ReminderRepeatMonths.HasValue && ReminderRepeatMonths.Value <= 0)
+            return "Repeat months must be greater than zero.";
+        if (ReminderRepeatMileage.HasValue && ReminderRepeatMileage.Value <= 0)
+            return "Repeat mileage must be greater than zero.";
+        return "";
+    }
+
+    private bool CanRemoveReminder() => SelectedReminder is not null;
+
+    [RelayCommand(CanExecute = nameof(CanRemoveReminder))]
+    private void RemoveReminder()
+    {
+        if (SelectedReminder is null) return;
+        var result = MessageBox.Show($"Remove the {SelectedReminder.ServiceType} reminder?",
+            "Remove reminder", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+        if (result != MessageBoxResult.Yes) return;
+
+        using var db = new GreaseMateDbContext();
+        var reminder = db.MaintenanceReminders.Find(SelectedReminder.Id);
+        if (reminder is not null)
+        {
+            db.MaintenanceReminders.Remove(reminder);
+            db.SaveChanges();
+        }
+        FinishReminderSave();
+    }
+
+    private bool CanCompleteReminder() => SelectedReminder is not null;
+
+    [RelayCommand(CanExecute = nameof(CanCompleteReminder))]
+    private void CompleteReminder()
+    {
+        if (SelectedReminder is null) return;
+        var result = MessageBox.Show(
+            $"Mark {SelectedReminder.ServiceType} complete today? You can edit cost and notes from Maintenance afterward.",
+            "Complete maintenance", MessageBoxButton.YesNo, MessageBoxImage.Question);
+        if (result != MessageBoxResult.Yes) return;
+
+        using var db = new GreaseMateDbContext();
+        var reminder = db.MaintenanceReminders.Include(r => r.Vehicle)
+            .FirstOrDefault(r => r.Id == SelectedReminder.Id);
+        if (reminder is null) return;
+
+        db.MaintenanceRecords.Add(new MaintenanceRecord
+        {
+            VehicleId = reminder.VehicleId,
+            ServiceType = reminder.ServiceType,
+            ServiceDate = DateTime.Today,
+            Mileage = reminder.Vehicle?.Mileage ?? 0,
+            Cost = 0,
+            Notes = reminder.Notes
+        });
+
+        var repeats = reminder.RepeatMonths.HasValue || reminder.RepeatMileage.HasValue;
+        if (repeats)
+        {
+            if (reminder.RepeatMonths.HasValue)
+                reminder.DueDate = (reminder.DueDate ?? DateTime.Today).AddMonths(reminder.RepeatMonths.Value);
+            if (reminder.RepeatMileage.HasValue)
+                reminder.DueMileage = (reminder.DueMileage ?? reminder.Vehicle?.Mileage ?? 0) +
+                                      reminder.RepeatMileage.Value;
+        }
+        else
+        {
+            db.MaintenanceReminders.Remove(reminder);
+        }
+
+        db.SaveChanges();
+        FinishReminderSave();
+        LoadMaintenance();
+    }
+
+    [RelayCommand]
+    private void CancelReminderEdit()
+    {
+        SelectedReminder = null;
+        ClearReminderForm();
+    }
+
+    private void FinishReminderSave()
+    {
+        SelectedReminder = null;
+        ClearReminderForm();
+        LoadReminders();
+    }
+
+    private void ClearReminderForm()
+    {
+        ReminderVehicle = null;
+        ReminderServiceType = ReminderNotes = "";
+        ReminderDueDate = null;
+        ReminderDueMileage = null;
+        ReminderRepeatMonths = null;
+        ReminderRepeatMileage = null;
+        ReminderFormError = "";
+        IsEditingReminder = false;
+    }
+
+    private void LoadReminderSettings()
+    {
+        using var db = new GreaseMateDbContext();
+        var settings = db.ReminderSettings.Find(1) ?? new ReminderSettings();
+        DefaultReminderDays = settings.LeadDays;
+        DefaultReminderMiles = settings.LeadMileage;
+    }
+
+    [RelayCommand]
+    private void SetReminderLeadTime(string days)
+    {
+        if (int.TryParse(days, out var parsed)) DefaultReminderDays = parsed;
+        ReminderSettingsMessage = "";
+    }
+
+    [RelayCommand]
+    private void SaveReminderSettings()
+    {
+        if (DefaultReminderDays < 0 || DefaultReminderMiles < 0)
+        {
+            ReminderSettingsMessage = "Lead time and mileage cannot be negative.";
+            return;
+        }
+
+        using var db = new GreaseMateDbContext();
+        var settings = db.ReminderSettings.Find(1) ?? new ReminderSettings();
+        settings.LeadDays = DefaultReminderDays;
+        settings.LeadMileage = DefaultReminderMiles;
+        if (db.Entry(settings).State == EntityState.Detached) db.ReminderSettings.Add(settings);
+        db.SaveChanges();
+        ReminderSettingsMessage = "Settings saved.";
     }
 }

@@ -7,6 +7,8 @@ public class GreaseMateDbContext : DbContext
 {
     public DbSet<Vehicle> Vehicles { get; set; }
     public DbSet<MaintenanceRecord> MaintenanceRecords { get; set; }
+    public DbSet<MaintenanceReminder> MaintenanceReminders { get; set; }
+    public DbSet<ReminderSettings> ReminderSettings { get; set; }
 
     protected override void OnConfiguring(
         DbContextOptionsBuilder options)
@@ -20,6 +22,12 @@ public class GreaseMateDbContext : DbContext
             .HasOne(record => record.Vehicle)
             .WithMany(vehicle => vehicle.MaintenanceRecords)
             .HasForeignKey(record => record.VehicleId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<MaintenanceReminder>()
+            .HasOne(reminder => reminder.Vehicle)
+            .WithMany(vehicle => vehicle.MaintenanceReminders)
+            .HasForeignKey(reminder => reminder.VehicleId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 
@@ -45,6 +53,29 @@ public class GreaseMateDbContext : DbContext
             );
             CREATE INDEX IF NOT EXISTS "IX_MaintenanceRecords_VehicleId"
                 ON "MaintenanceRecords" ("VehicleId");
+
+            CREATE TABLE IF NOT EXISTS "MaintenanceReminders" (
+                "Id" INTEGER NOT NULL CONSTRAINT "PK_MaintenanceReminders" PRIMARY KEY AUTOINCREMENT,
+                "VehicleId" INTEGER NOT NULL,
+                "ServiceType" TEXT NOT NULL,
+                "DueDate" TEXT NULL,
+                "DueMileage" INTEGER NULL,
+                "RepeatMonths" INTEGER NULL,
+                "RepeatMileage" INTEGER NULL,
+                "Notes" TEXT NOT NULL,
+                CONSTRAINT "FK_MaintenanceReminders_Vehicles_VehicleId"
+                    FOREIGN KEY ("VehicleId") REFERENCES "Vehicles" ("Id") ON DELETE CASCADE
+            );
+            CREATE INDEX IF NOT EXISTS "IX_MaintenanceReminders_VehicleId"
+                ON "MaintenanceReminders" ("VehicleId");
+
+            CREATE TABLE IF NOT EXISTS "ReminderSettings" (
+                "Id" INTEGER NOT NULL CONSTRAINT "PK_ReminderSettings" PRIMARY KEY,
+                "LeadDays" INTEGER NOT NULL,
+                "LeadMileage" INTEGER NOT NULL
+            );
+            INSERT OR IGNORE INTO "ReminderSettings" ("Id", "LeadDays", "LeadMileage")
+                VALUES (1, 30, 1000);
             """);
     }
 }

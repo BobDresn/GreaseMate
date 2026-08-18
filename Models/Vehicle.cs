@@ -17,5 +17,8 @@ public class Vehicle
     public ICollection<MaintenanceRecord> MaintenanceRecords { get; set; } =
         new List<MaintenanceRecord>();
 
+    public ICollection<MaintenanceReminder> MaintenanceReminders { get; set; } =
+        new List<MaintenanceReminder>();
+
     public string DisplayName => $"{Year} {Make} {Model}";
 }
