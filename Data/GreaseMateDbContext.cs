@@ -18,6 +18,11 @@ public class GreaseMateDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Vehicle>().Ignore(vehicle => vehicle.UpcomingMaintenance);
+        modelBuilder.Entity<Vehicle>().Ignore(vehicle => vehicle.UpcomingMaintenanceCount);
+        modelBuilder.Entity<Vehicle>().Ignore(vehicle => vehicle.HasMoreThanThreeUpcoming);
+        modelBuilder.Entity<Vehicle>().Ignore(vehicle => vehicle.DisplayName);
+
         modelBuilder.Entity<MaintenanceRecord>()
             .HasOne(record => record.Vehicle)
             .WithMany(vehicle => vehicle.MaintenanceRecords)

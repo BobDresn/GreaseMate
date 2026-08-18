@@ -103,7 +103,10 @@ public partial class MainViewModel : ObservableObject
     {
         using var db = new GreaseMateDbContext();
         Vehicles.Clear();
-        foreach (var vehicle in db.Vehicles.OrderByDescending(v => v.Year).ThenBy(v => v.Make))
+        foreach (var vehicle in db.Vehicles
+                     .Include(v => v.MaintenanceReminders)
+                     .OrderByDescending(v => v.Year)
+                     .ThenBy(v => v.Make))
             Vehicles.Add(vehicle);
         OnPropertyChanged(nameof(VehicleCount));
     }
@@ -260,6 +263,7 @@ public partial class MainViewModel : ObservableObject
 
         MaintenanceCount = MaintenanceRecords.Count(r => r.ServiceDate.Year == DateTime.Today.Year);
         UpcomingMaintenanceCount = MaintenanceReminders.Count;
+        LoadVehicles();
     }
 
     [RelayCommand]
@@ -468,6 +472,7 @@ public partial class MainViewModel : ObservableObject
             MaintenanceReminders.Add(reminder);
 
         UpcomingMaintenanceCount = MaintenanceReminders.Count;
+        LoadVehicles();
     }
 
     [RelayCommand]
