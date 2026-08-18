@@ -2,120 +2,326 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Grid Margin="30">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+	<Grid Margin="30">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+		</Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0">
+		<StackPanel Grid.Row="0">
 
-            <TextBlock Text="Vehicles"
+			<TextBlock Text="Vehicles"
                        FontSize="30"
                        FontWeight="Bold"/>
 
-            <TextBlock Text="Manage your vehicles."
+			<TextBlock Text="Manage your vehicles."
                        FontSize="14"
                        Foreground="#777"
                        Margin="0,5,0,25"/>
-        </StackPanel>
+		</StackPanel>
 
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="330"/>
-                <ColumnDefinition Width="20"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+		<Grid Grid.Row="1">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="330"/>
+				<ColumnDefinition Width="20"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
 
-            <!-- Add vehicle form -->
-            <Border Grid.Column="0" Background="White" CornerRadius="12" Padding="25">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel>
-                        <TextBlock Text="Add a Vehicle" FontSize="20" FontWeight="SemiBold"/>
-                        <TextBlock Text="VIN is optional so older vehicles can be entered manually."
+			<!-- Add vehicle form -->
+			<Border Grid.Column="0" Background="White" CornerRadius="12" Padding="25">
+				<ScrollViewer VerticalScrollBarVisibility="Auto">
+					<StackPanel>
+						<TextBlock FontSize="20" FontWeight="SemiBold">
+							<TextBlock.Style>
+								<Style TargetType="TextBlock">
+									<Setter Property="Text" Value="Add a Vehicle"/>
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding IsEditingVehicle}" Value="True">
+											<Setter Property="Text" Value="Edit Vehicle"/>
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</TextBlock.Style>
+						</TextBlock>
+						<TextBlock Text="VIN is optional so older vehicles can be entered manually."
                                    Foreground="#777" TextWrapping="Wrap" Margin="0,5,0,20"/>
 
-                        <TextBlock Text="VIN (optional)" FontWeight="SemiBold"/>
-                        <TextBox Text="{Binding Vin, UpdateSourceTrigger=PropertyChanged}"
+						<TextBlock Text="VIN (optional)" FontWeight="SemiBold"/>
+						<TextBox Text="{Binding Vin, UpdateSourceTrigger=PropertyChanged}"
                                  MaxLength="17" Height="36" Padding="8" Margin="0,5,0,14"/>
 
-                        <TextBlock Text="Make" FontWeight="SemiBold"/>
-                        <TextBox Text="{Binding Make, UpdateSourceTrigger=PropertyChanged}"
+						<TextBlock Text="Make" FontWeight="SemiBold"/>
+						<TextBox Text="{Binding Make, UpdateSourceTrigger=PropertyChanged}"
                                  Height="36" Padding="8" Margin="0,5,0,14"/>
 
-                        <TextBlock Text="Model" FontWeight="SemiBold"/>
-                        <TextBox Text="{Binding Model, UpdateSourceTrigger=PropertyChanged}"
+						<TextBlock Text="Model" FontWeight="SemiBold"/>
+						<TextBox Text="{Binding Model, UpdateSourceTrigger=PropertyChanged}"
                                  Height="36" Padding="8" Margin="0,5,0,14"/>
 
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="12"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <StackPanel Grid.Column="0">
-                                <TextBlock Text="Year" FontWeight="SemiBold"/>
-                                <TextBox Text="{Binding Year, UpdateSourceTrigger=PropertyChanged}"
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*"/>
+								<ColumnDefinition Width="12"/>
+								<ColumnDefinition Width="*"/>
+							</Grid.ColumnDefinitions>
+							<StackPanel Grid.Column="0">
+								<TextBlock Text="Year" FontWeight="SemiBold"/>
+								<TextBox Text="{Binding Year, UpdateSourceTrigger=PropertyChanged}"
                                          Height="36" Padding="8" Margin="0,5,0,0"/>
-                            </StackPanel>
-                            <StackPanel Grid.Column="2">
-                                <TextBlock Text="Mileage" FontWeight="SemiBold"/>
-                                <TextBox Text="{Binding Mileage, UpdateSourceTrigger=PropertyChanged}"
+							</StackPanel>
+							<StackPanel Grid.Column="2">
+								<TextBlock Text="Mileage" FontWeight="SemiBold"/>
+								<TextBox Text="{Binding Mileage, UpdateSourceTrigger=PropertyChanged}"
                                          Height="36" Padding="8" Margin="0,5,0,0"/>
-                            </StackPanel>
-                        </Grid>
+							</StackPanel>
+						</Grid>
 
-                        <TextBlock Text="{Binding VehicleFormError}" Foreground="#C62828"
+						<TextBlock Text="{Binding VehicleFormError}" Foreground="#C62828"
                                    TextWrapping="Wrap" MinHeight="20" Margin="0,12,0,4"/>
 
-                        <Button Content="Add Vehicle" Command="{Binding AddVehicleCommand}"
+						<Button Content="Add Vehicle" Command="{Binding AddVehicleCommand}"
                                 Height="42" Background="#171A1F" Foreground="White"
-                                FontWeight="SemiBold" Cursor="Hand"/>
-                    </StackPanel>
-                </ScrollViewer>
-            </Border>
+                                FontWeight="SemiBold" Cursor="Hand">
+							<Button.Style>
+								<Style TargetType="Button">
+									<Setter Property="Visibility" Value="Visible"/>
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding IsEditingVehicle}" Value="True">
+											<Setter Property="Visibility" Value="Collapsed"/>
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</Button.Style>
+						</Button>
 
-            <!-- Saved vehicles -->
-            <Border Grid.Column="2" Background="White" CornerRadius="12" Padding="25">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
+						<Grid Margin="0,0,0,0">
+							<Grid.Style>
+								<Style TargetType="Grid">
+									<Setter Property="Visibility" Value="Collapsed"/>
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding IsEditingVehicle}" Value="True">
+											<Setter Property="Visibility" Value="Visible"/>
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</Grid.Style>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*"/>
+								<ColumnDefinition Width="10"/>
+								<ColumnDefinition Width="*"/>
+							</Grid.ColumnDefinitions>
+							<Button Grid.Column="0" Content="Save Changes" Command="{Binding UpdateVehicleCommand}"
+                                    Height="42" Background="#171A1F" Foreground="White" FontWeight="SemiBold"/>
+							<Button Grid.Column="2" Content="Cancel" Command="{Binding CancelVehicleEditCommand}"
+                                    Height="42"/>
+						</Grid>
+					</StackPanel>
+				</ScrollViewer>
+			</Border>
 
-                    <Grid Grid.Row="0" Margin="0,0,0,15">
-                        <TextBlock Text="Your Vehicles" FontSize="20" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding VehicleCount, StringFormat={}{0} tracked}"
+			<!-- Saved vehicles -->
+			<Border Grid.Column="2" Background="White" CornerRadius="12" Padding="25">
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="*"/>
+						<RowDefinition Height="Auto"/>
+					</Grid.RowDefinitions>
+
+					<Grid Grid.Row="0" Margin="0,0,0,15">
+						<TextBlock Text="Your Vehicles" FontSize="20" FontWeight="SemiBold"/>
+						<TextBlock Text="{Binding VehicleCount, StringFormat={}{0} tracked}"
                                    Foreground="#777" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                    </Grid>
+					</Grid>
 
-                    <DataGrid Grid.Row="1" ItemsSource="{Binding Vehicles}"
-                              SelectedItem="{Binding SelectedVehicle}"
-                              AutoGenerateColumns="False" IsReadOnly="True"
-                              SelectionMode="Single" SelectionUnit="FullRow"
-                              CanUserAddRows="False" HeadersVisibility="Column"
-                              GridLinesVisibility="Horizontal" BorderThickness="0">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Year" Binding="{Binding Year}" Width="70"/>
-                            <DataGridTextColumn Header="Vehicle" Binding="{Binding Make}" Width="*"/>
-                            <DataGridTextColumn Header="Model" Binding="{Binding Model}" Width="*"/>
-                            <DataGridTextColumn Header="Mileage" Binding="{Binding Mileage, StringFormat=N0}" Width="100"/>
-                            <DataGridTextColumn Header="VIN" Binding="{Binding Vin}" Width="150"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
+					<!-- Responsive vehicle card gallery -->
+					<Grid Grid.Row="1">
+						<ListBox ItemsSource="{Binding Vehicles}"
+                                 SelectedItem="{Binding SelectedVehicle}"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                 ScrollViewer.VerticalScrollBarVisibility="Auto">
+							<ListBox.ItemsPanel>
+								<ItemsPanelTemplate>
+									<WrapPanel Orientation="Horizontal"/>
+								</ItemsPanelTemplate>
+							</ListBox.ItemsPanel>
 
-                    <Grid Grid.Row="2" Margin="0,15,0,0">
-                        <TextBlock Text="Select a row to remove a vehicle."
+							<ListBox.ItemContainerStyle>
+								<Style TargetType="ListBoxItem">
+									<Setter Property="Width" Value="260"/>
+									<Setter Property="Margin" Value="0,0,14,14"/>
+									<Setter Property="Padding" Value="0"/>
+									<Setter Property="Background" Value="Transparent"/>
+									<Setter Property="BorderThickness" Value="0"/>
+									<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+									<Setter Property="VerticalContentAlignment" Value="Stretch"/>
+									<Setter Property="Cursor" Value="Hand"/>
+									<Setter Property="Template">
+										<Setter.Value>
+											<ControlTemplate TargetType="ListBoxItem">
+												<Border x:Name="CardBorder"
+                                                        Background="#F8F9FB"
+                                                        BorderBrush="#E3E6EA"
+                                                        BorderThickness="1"
+                                                        CornerRadius="12"
+                                                        SnapsToDevicePixels="True">
+													<ContentPresenter/>
+												</Border>
+												<ControlTemplate.Triggers>
+													<Trigger Property="IsMouseOver" Value="True">
+														<Setter TargetName="CardBorder" Property="Background" Value="#F1F5FF"/>
+														<Setter TargetName="CardBorder" Property="BorderBrush" Value="#AFC5F5"/>
+													</Trigger>
+													<Trigger Property="IsSelected" Value="True">
+														<Setter TargetName="CardBorder" Property="Background" Value="#EDF3FF"/>
+														<Setter TargetName="CardBorder" Property="BorderBrush" Value="#2F6FED"/>
+														<Setter TargetName="CardBorder" Property="BorderThickness" Value="2"/>
+													</Trigger>
+													<Trigger Property="IsKeyboardFocusWithin" Value="True">
+														<Setter TargetName="CardBorder" Property="BorderBrush" Value="#2F6FED"/>
+													</Trigger>
+												</ControlTemplate.Triggers>
+											</ControlTemplate>
+										</Setter.Value>
+									</Setter>
+								</Style>
+							</ListBox.ItemContainerStyle>
+
+							<ListBox.ItemTemplate>
+								<DataTemplate>
+									<Grid Margin="18">
+										<Grid.RowDefinitions>
+											<RowDefinition Height="Auto"/>
+											<RowDefinition Height="Auto"/>
+											<RowDefinition Height="1"/>
+											<RowDefinition Height="Auto"/>
+										</Grid.RowDefinitions>
+
+										<Grid Grid.Row="0">
+											<Border Width="46" Height="46"
+                                                    Background="#171A1F"
+                                                    CornerRadius="23"
+                                                    HorizontalAlignment="Left">
+												<TextBlock Text="{Binding Make[0]}"
+                                                           Foreground="White"
+                                                           FontSize="20"
+                                                           FontWeight="Bold"
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center"/>
+											</Border>
+
+											<Border Background="#E3EAF8"
+                                                    CornerRadius="12"
+                                                    Padding="10,4"
+                                                    HorizontalAlignment="Right"
+                                                    VerticalAlignment="Top">
+												<TextBlock Text="{Binding Year}"
+                                                           Foreground="#34558B"
+                                                           FontSize="12"
+                                                           FontWeight="SemiBold"/>
+											</Border>
+										</Grid>
+
+										<StackPanel Grid.Row="1" Margin="0,15,0,16">
+											<TextBlock Text="{Binding Make}"
+                                                       Foreground="#171A1F"
+                                                       FontSize="18"
+                                                       FontWeight="Bold"
+                                                       TextTrimming="CharacterEllipsis"/>
+											<TextBlock Text="{Binding Model}"
+                                                       Foreground="#5F6670"
+                                                       FontSize="15"
+                                                       Margin="0,2,0,0"
+                                                       TextTrimming="CharacterEllipsis"/>
+										</StackPanel>
+
+										<Border Grid.Row="2" Background="#E3E6EA"/>
+
+										<Grid Grid.Row="3" Margin="0,14,0,0">
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition Width="*"/>
+												<ColumnDefinition Width="Auto"/>
+											</Grid.ColumnDefinitions>
+
+											<StackPanel>
+												<TextBlock Text="MILEAGE"
+                                                           Foreground="#8A9099"
+                                                           FontSize="10"
+                                                           FontWeight="SemiBold"/>
+												<TextBlock Text="{Binding Mileage, StringFormat={}{0:N0} mi}"
+                                                           Foreground="#2D333B"
+                                                           FontSize="14"
+                                                           FontWeight="SemiBold"
+                                                           Margin="0,2,0,0"/>
+											</StackPanel>
+
+											<StackPanel Grid.Column="1" HorizontalAlignment="Right">
+												<TextBlock Text="VIN"
+                                                           Foreground="#8A9099"
+                                                           FontSize="10"
+                                                           FontWeight="SemiBold"
+                                                           HorizontalAlignment="Right"/>
+												<TextBlock HorizontalAlignment="Right"
+                                                           Foreground="#5F6670"
+                                                           FontSize="11"
+                                                           Margin="0,3,0,0">
+													<TextBlock.Style>
+														<Style TargetType="TextBlock">
+															<Setter Property="Text" Value="{Binding Vin}"/>
+															<Style.Triggers>
+																<DataTrigger Binding="{Binding Vin}" Value="">
+																	<Setter Property="Text" Value="Not provided"/>
+																</DataTrigger>
+															</Style.Triggers>
+														</Style>
+													</TextBlock.Style>
+												</TextBlock>
+											</StackPanel>
+										</Grid>
+									</Grid>
+								</DataTemplate>
+							</ListBox.ItemTemplate>
+						</ListBox>
+
+						<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+							<StackPanel.Style>
+								<Style TargetType="StackPanel">
+									<Setter Property="Visibility" Value="Collapsed"/>
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding VehicleCount}" Value="0">
+											<Setter Property="Visibility" Value="Visible"/>
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</StackPanel.Style>
+							<Border Width="58" Height="58" Background="#F0F2F5" CornerRadius="29">
+								<TextBlock Text="+" Foreground="#69717C" FontSize="28"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+							</Border>
+							<TextBlock Text="Your garage is empty"
+                                       FontSize="17" FontWeight="SemiBold"
+                                       HorizontalAlignment="Center" Margin="0,14,0,0"/>
+							<TextBlock Text="Add your first vehicle using the form."
+                                       Foreground="#777" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+						</StackPanel>
+					</Grid>
+
+					<Grid Grid.Row="2" Margin="0,15,0,0">
+						<TextBlock Text="Select a vehicle card to edit or remove it."
                                    Foreground="#777" VerticalAlignment="Center"/>
-                        <Button Content="Remove Selected" Command="{Binding RemoveVehicleCommand}"
-                                HorizontalAlignment="Right" Height="38" Padding="18,0"
-                                Foreground="#B71C1C" Cursor="Hand"/>
-                    </Grid>
-                </Grid>
-            </Border>
-        </Grid>
+						<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+							<Button Content="Edit Selected" Command="{Binding EditVehicleCommand}"
+                                    Height="38" Padding="18,0" Margin="0,0,10,0" Cursor="Hand"/>
+							<Button Content="Remove Selected" Command="{Binding RemoveVehicleCommand}"
+                                    Height="38" Padding="18,0" Foreground="#B71C1C" Cursor="Hand"/>
+						</StackPanel>
+					</Grid>
+				</Grid>
+			</Border>
+		</Grid>
 
-    </Grid>
+	</Grid>
 
 </UserControl>

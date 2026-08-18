@@ -13,4 +13,9 @@ public class Vehicle
     public int Year { get; set; }
 
     public int Mileage { get; set; }
+
+    public ICollection<MaintenanceRecord> MaintenanceRecords { get; set; } =
+        new List<MaintenanceRecord>();
+
+    public string DisplayName => $"{Year} {Make} {Model}";
 }
