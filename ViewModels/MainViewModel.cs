@@ -17,6 +17,7 @@ namespace GreaseMate.ViewModels;
 
 public partial class MainViewModel : ObservableObject
 {
+    private readonly VehiclePhotoService vehiclePhotoService = new();
     [ObservableProperty] private string vin = "";
     [ObservableProperty] private string make = "";
     [ObservableProperty] private string model = "";
@@ -316,6 +317,62 @@ public partial class MainViewModel : ObservableObject
 
     private bool CanRemoveVehicle() => SelectedVehicle is not null;
 
+    [RelayCommand]
+    private void UploadVehiclePhoto(Vehicle vehicle)
+    {
+        var dialog = new OpenFileDialog
+        {
+            Title = $"Choose a photo for {vehicle.DisplayName}",
+            Filter = "Image files (*.jpg;*.jpeg;*.png;*.bmp)|*.jpg;*.jpeg;*.png;*.bmp",
+            Multiselect = false,
+            CheckFileExists = true
+        };
+        if (dialog.ShowDialog() != true) return;
+
+        string? importedFileName = null;
+        try
+        {
+            importedFileName = vehiclePhotoService.Import(dialog.FileName);
+            using var db = new GreaseMateDbContext();
+            var savedVehicle = db.Vehicles.Find(vehicle.Id);
+            if (savedVehicle is null)
+            {
+                vehiclePhotoService.Delete(importedFileName);
+                return;
+            }
+
+            var previousFileName = savedVehicle.PhotoFileName;
+            savedVehicle.PhotoFileName = importedFileName;
+            db.SaveChanges();
+            vehiclePhotoService.Delete(previousFileName);
+            LoadVehicles();
+        }
+        catch (Exception ex)
+        {
+            vehiclePhotoService.Delete(importedFileName);
+            MessageBox.Show($"The photo could not be saved.\n\n{ex.Message}",
+                "Vehicle photo", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    [RelayCommand]
+    private void RemoveVehiclePhoto(Vehicle vehicle)
+    {
+        if (string.IsNullOrWhiteSpace(vehicle.PhotoFileName)) return;
+        var result = MessageBox.Show($"Remove the photo for {vehicle.DisplayName}?",
+            "Remove vehicle photo", MessageBoxButton.YesNo, MessageBoxImage.Question);
+        if (result != MessageBoxResult.Yes) return;
+
+        using var db = new GreaseMateDbContext();
+        var savedVehicle = db.Vehicles.Find(vehicle.Id);
+        if (savedVehicle is null) return;
+        var fileName = savedVehicle.PhotoFileName;
+        savedVehicle.PhotoFileName = null;
+        db.SaveChanges();
+        vehiclePhotoService.Delete(fileName);
+        LoadVehicles();
+    }
+
     [RelayCommand(CanExecute = nameof(CanRemoveVehicle))]
     private void RemoveVehicle()
     {
@@ -329,8 +386,10 @@ public partial class MainViewModel : ObservableObject
         var vehicle = db.Vehicles.Find(SelectedVehicle.Id);
         if (vehicle is not null)
         {
+            var photoFileName = vehicle.PhotoFileName;
             db.Vehicles.Remove(vehicle);
             db.SaveChanges();
+            vehiclePhotoService.Delete(photoFileName);
         }
         SelectedVehicle = null;
         ClearVehicleForm();

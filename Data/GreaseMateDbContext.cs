@@ -22,6 +22,9 @@ public class GreaseMateDbContext : DbContext
         modelBuilder.Entity<Vehicle>().Ignore(vehicle => vehicle.UpcomingMaintenanceCount);
         modelBuilder.Entity<Vehicle>().Ignore(vehicle => vehicle.HasMoreThanThreeUpcoming);
         modelBuilder.Entity<Vehicle>().Ignore(vehicle => vehicle.DisplayName);
+        modelBuilder.Entity<Vehicle>().Ignore(vehicle => vehicle.PhotoPath);
+        modelBuilder.Entity<Vehicle>().Ignore(vehicle => vehicle.HasPhoto);
+        modelBuilder.Entity<Vehicle>().Ignore(vehicle => vehicle.PhotoImage);
 
         modelBuilder.Entity<MaintenanceRecord>()
             .HasOne(record => record.Vehicle)
@@ -89,5 +92,11 @@ public class GreaseMateDbContext : DbContext
         if (!columns.Contains("LastNotificationDate"))
             Database.ExecuteSqlRaw(
                 "ALTER TABLE MaintenanceReminders ADD COLUMN LastNotificationDate TEXT NULL");
+
+        var vehicleColumns = Database.SqlQueryRaw<string>(
+            "SELECT name AS Value FROM pragma_table_info('Vehicles')").ToList();
+        if (!vehicleColumns.Contains("PhotoFileName"))
+            Database.ExecuteSqlRaw(
+                "ALTER TABLE Vehicles ADD COLUMN PhotoFileName TEXT NULL");
     }
 }
