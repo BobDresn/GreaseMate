@@ -68,6 +68,7 @@ public class GreaseMateDbContext : DbContext
                 "RepeatMonths" INTEGER NULL,
                 "RepeatMileage" INTEGER NULL,
                 "Notes" TEXT NOT NULL,
+                "LastNotificationDate" TEXT NULL,
                 CONSTRAINT "FK_MaintenanceReminders_Vehicles_VehicleId"
                     FOREIGN KEY ("VehicleId") REFERENCES "Vehicles" ("Id") ON DELETE CASCADE
             );
@@ -82,5 +83,11 @@ public class GreaseMateDbContext : DbContext
             INSERT OR IGNORE INTO "ReminderSettings" ("Id", "LeadDays", "LeadMileage")
                 VALUES (1, 30, 1000);
             """);
+
+        var columns = Database.SqlQueryRaw<string>(
+            "SELECT name AS Value FROM pragma_table_info('MaintenanceReminders')").ToList();
+        if (!columns.Contains("LastNotificationDate"))
+            Database.ExecuteSqlRaw(
+                "ALTER TABLE MaintenanceReminders ADD COLUMN LastNotificationDate TEXT NULL");
     }
 }

@@ -10,6 +10,7 @@ public class MaintenanceReminder
     public int? RepeatMonths { get; set; }
     public int? RepeatMileage { get; set; }
     public string Notes { get; set; } = "";
+    public DateTime? LastNotificationDate { get; set; }
 
     public Vehicle? Vehicle { get; set; }
 

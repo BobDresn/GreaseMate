@@ -7,6 +7,11 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
+using GreaseMate.Services;
+using Microsoft.Win32;
+using System.Globalization;
+using System.IO;
+using System.Text;
 
 namespace GreaseMate.ViewModels;
 
@@ -53,6 +58,13 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty] private int defaultReminderDays = 30;
     [ObservableProperty] private int defaultReminderMiles = 1000;
     [ObservableProperty] private string reminderSettingsMessage = "";
+    [ObservableProperty] private Vehicle? reportVehicle;
+    [ObservableProperty] private DateTime? reportStartDate = new(DateTime.Today.Year, 1, 1);
+    [ObservableProperty] private DateTime? reportEndDate = DateTime.Today;
+    [ObservableProperty] private decimal reportTotalCost;
+    [ObservableProperty] private decimal reportAverageCost;
+    [ObservableProperty] private int reportServiceCount;
+    [ObservableProperty] private string reportStatusMessage = "";
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(EditReminderCommand))]
@@ -65,6 +77,7 @@ public partial class MainViewModel : ObservableObject
     public ObservableCollection<Vehicle> Vehicles { get; } = new();
     public ObservableCollection<MaintenanceRecord> MaintenanceRecords { get; } = new();
     public ObservableCollection<MaintenanceReminder> MaintenanceReminders { get; } = new();
+    public ObservableCollection<MaintenanceRecord> ReportRecords { get; } = new();
     public int VehicleCount => Vehicles.Count;
 
     [ObservableProperty] private int maintenanceCount;
@@ -96,7 +109,96 @@ public partial class MainViewModel : ObservableObject
         LoadReminders();
         CurrentView = new RemindersView();
     }
-    [RelayCommand] private void ShowReports() => CurrentView = new ReportsView();
+    [RelayCommand]
+    private void ShowReports()
+    {
+        LoadReport();
+        CurrentView = new ReportsView();
+    }
+
+    partial void OnReportVehicleChanged(Vehicle? value) => LoadReport();
+    partial void OnReportStartDateChanged(DateTime? value) => LoadReport();
+    partial void OnReportEndDateChanged(DateTime? value) => LoadReport();
+
+    [RelayCommand] private void ClearReportVehicle() => ReportVehicle = null;
+
+    [RelayCommand]
+    private void LoadReport()
+    {
+        if (ReportStartDate.HasValue && ReportEndDate.HasValue &&
+            ReportStartDate.Value.Date > ReportEndDate.Value.Date)
+        {
+            ReportStatusMessage = "The start date must be before the end date.";
+            ReportRecords.Clear();
+            UpdateReportTotals();
+            return;
+        }
+
+        using var db = new GreaseMateDbContext();
+        var query = db.MaintenanceRecords.Include(r => r.Vehicle).AsQueryable();
+        if (ReportVehicle is not null) query = query.Where(r => r.VehicleId == ReportVehicle.Id);
+        if (ReportStartDate.HasValue) query = query.Where(r => r.ServiceDate >= ReportStartDate.Value.Date);
+        if (ReportEndDate.HasValue)
+        {
+            var exclusiveEnd = ReportEndDate.Value.Date.AddDays(1);
+            query = query.Where(r => r.ServiceDate < exclusiveEnd);
+        }
+
+        ReportRecords.Clear();
+        foreach (var record in query.OrderByDescending(r => r.ServiceDate).ThenByDescending(r => r.Id))
+            ReportRecords.Add(record);
+        ReportStatusMessage = ReportRecords.Count == 0 ? "No records match these filters." : "";
+        UpdateReportTotals();
+    }
+
+    private void UpdateReportTotals()
+    {
+        ReportServiceCount = ReportRecords.Count;
+        ReportTotalCost = ReportRecords.Sum(r => r.Cost);
+        ReportAverageCost = ReportServiceCount == 0 ? 0 : ReportTotalCost / ReportServiceCount;
+    }
+
+    [RelayCommand]
+    private void ExportReportCsv()
+    {
+        if (ReportRecords.Count == 0)
+        {
+            ReportStatusMessage = "There are no report rows to export.";
+            return;
+        }
+
+        var dialog = new SaveFileDialog
+        {
+            Title = "Export maintenance report",
+            Filter = "CSV file (*.csv)|*.csv",
+            FileName = $"GreaseMate-Report-{DateTime.Today:yyyy-MM-dd}.csv",
+            DefaultExt = ".csv"
+        };
+        if (dialog.ShowDialog() != true) return;
+
+        static string Csv(string value) => $"\"{value.Replace("\"", "\"\"")}\"";
+        var lines = new List<string> { "Vehicle,Service Date,Service Type,Mileage,Cost,Notes" };
+        lines.AddRange(ReportRecords.Select(r => string.Join(",",
+            Csv(r.VehicleDisplay), r.ServiceDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+            Csv(r.ServiceType), r.Mileage.ToString(CultureInfo.InvariantCulture),
+            r.Cost.ToString("0.00", CultureInfo.InvariantCulture), Csv(r.Notes))));
+        File.WriteAllLines(dialog.FileName, lines, new UTF8Encoding(true));
+        ReportStatusMessage = $"Exported {ReportRecords.Count} records.";
+    }
+
+    [RelayCommand]
+    private void SendTestNotification()
+    {
+        try
+        {
+            new DesktopNotificationService().SendDueNotifications(includeTest: true);
+            ReminderSettingsMessage = "Test notification sent.";
+        }
+        catch (Exception ex)
+        {
+            ReminderSettingsMessage = $"Notification failed: {ex.Message}";
+        }
+    }
 
     [RelayCommand]
     private void LoadVehicles()
